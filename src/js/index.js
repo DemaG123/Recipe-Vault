@@ -1,36 +1,50 @@
 document.getElementById("addVideoBtn").addEventListener("click", () => {
-  // Ask user for YouTube URL
   const url = prompt("Paste the YouTube video URL:");
 
   if (url) {
     let videoId = "";
 
-    // Case 1: standard YouTube URL (https://www.youtube.com/watch?v=XXXX)
     if (url.includes("watch?v=")) {
       videoId = url.split("watch?v=")[1].split("&")[0];
-    }
-    // Case 2: short YouTube URL (https://youtu.be/XXXX)
-    else if (url.includes("youtu.be/")) {
+    } else if (url.includes("youtu.be/")) {
       videoId = url.split("youtu.be/")[1].split("?")[0];
     }
 
     if (videoId) {
+      // Create a wrapper div for the iframe + remove button
+      const videoWrapper = document.createElement("div");
+      videoWrapper.style.position = "relative"; // optional for styling
+      videoWrapper.style.marginBottom = "20px";
+      videoWrapper.className = "video-wrapper"; // optional for styling
+
       // Create iframe
       const iframe = document.createElement("iframe");
-      iframe.width = "560" / 1.5;
-      iframe.height = "315" / 1.5;
+      iframe.width = "560";
+      iframe.height = "315";
       iframe.src = `https://www.youtube.com/embed/${videoId}`;
       iframe.frameBorder = "0";
       iframe.allow =
         "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
       iframe.allowFullscreen = true;
 
-      // Add iframe to container
-      document.getElementById("videoContainer").appendChild(iframe);
-      document.getElementById("videoContainer").style.backgroundColor = "lightgray";
-      document.getElementById("videoContainer").style.padding = "20px";
-      document.getElementById("videoContainer").style.borderRadius = "10px";
+      // Create remove button
+      const removeBtn = document.createElement("button");
+      removeBtn.textContent = "Remove";
+      removeBtn.classList.add("btnRemove");
+      removeBtn.style.display = "block";
+      removeBtn.style.marginTop = "5px";
 
+      // Remove event
+      removeBtn.addEventListener("click", () => {
+        videoWrapper.remove(); // removes the entire video + button
+      });
+
+      // Append iframe and button to wrapper
+      videoWrapper.appendChild(iframe);
+      videoWrapper.appendChild(removeBtn);
+
+      // Add wrapper to container
+      document.getElementById("videoContainer").appendChild(videoWrapper);
     } else {
       alert("Invalid YouTube URL");
     }
