@@ -1,12 +1,24 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 2rem;
-  background: #f9f9f9;
+#videoContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 videos per row */
+  gap: 20px; /* space between videos */
+  margin-top: 20px;
 }
-h1 { color: #333; }
-#app {
-  padding: 1rem;
-  background: white;
+
+iframe {
+  width: 100%;      /* make them fill the column */
+  aspect-ratio: 16/9; /* keep correct video ratio */
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #28a745;
+  color: white;
+  transition: background-color 0.3s ease;
 }
