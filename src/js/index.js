@@ -5,6 +5,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   const container = document.getElementById("videoContainer");
+  container.className = "video-container bg-secondary p-4";
   const addBtn = document.getElementById("addVideoBtn");
 
   // Load saved videos from localStorage
