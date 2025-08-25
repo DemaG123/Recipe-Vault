@@ -1,3 +1,5 @@
+import "bootstrap/dist/css/bootstrap.min.css";
+
 const container = document.getElementById("videoContainer");
 const addBtn = document.getElementById("addVideoBtn");
 
