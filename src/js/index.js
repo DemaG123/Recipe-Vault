@@ -5,7 +5,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   const container = document.getElementById("videoContainer");
-  container.className = "video-container bg-secondary p-4";
+  container.className = "video-container bg-secondary p-4 m-2 rounded";
   const addBtn = document.getElementById("addVideoBtn");
 
   // Load saved videos from localStorage
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // remove button container (to center button)
   const btnContainer = document.createElement("div");
-  btnContainer.className = "text-center mt-2"; // center the button with margin top
+  btnContainer.className = "text-center m-2"; // center the button with margin top
 
   const removeBtn = document.createElement("button");
   removeBtn.textContent = "Remove";
@@ -36,11 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // click event
   removeBtn.addEventListener("click", () => {
-    // remove video wrapper
-    videoWrapper.remove();
-    // update localStorage
-    savedVideos = savedVideos.filter(id => id !== videoId);
-    localStorage.setItem("videos", JSON.stringify(savedVideos));
+    if (confirm("Are you sure you want to remove this video?")) {
+      videoWrapper.remove();
+      savedVideos = savedVideos.filter(id => id !== videoId);
+      localStorage.setItem("videos", JSON.stringify(savedVideos));
+    }
   });
 
   btnContainer.appendChild(removeBtn);
