@@ -57,7 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Add video button listener
   addBtn.addEventListener("click", () => {
-    const url = prompt("Paste the YouTube video URL:");
+    const urlInput = document.getElementById("videoUrlInput");
+    const url = urlInput.value.trim();
     if (!url) return;
 
     let videoId = "";
@@ -75,6 +76,10 @@ document.addEventListener("DOMContentLoaded", () => {
     savedVideos.push(videoId);
     localStorage.setItem("videos", JSON.stringify(savedVideos));
     renderVideo(videoId);
+
+    // Clear input after adding
+    urlInput.value = "";
+
   });
 
 });
