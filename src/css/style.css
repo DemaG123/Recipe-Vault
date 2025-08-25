@@ -12,17 +12,6 @@ iframe {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.btnAdd {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  border-radius: 5px;
-  background-color: #28a745;
-  color: white;
-  transition: background-color 0.3s ease;
-}
-
 .video-wrapper {
   display: flex;
   flex-direction: column; /* stack iframe + button vertically */
@@ -30,13 +19,4 @@ iframe {
   margin-bottom: 20px;
 }
 
-.btnRemove {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  border-radius: 5px;
-  background-color: #dc3545;
-  color: white;
-  transition: background-color 0.3s ease;
-}
+
