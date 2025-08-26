@@ -1,59 +1,103 @@
-// If using a bundler, keep this line; otherwise remove for CDN
-// import "bootstrap/dist/css/bootstrap.min.css";
-
-// Wait until DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
-
   const container = document.getElementById("videoContainer");
   container.className = "video-container bg-secondary p-4 m-2 rounded";
   const addBtn = document.getElementById("addVideoBtn");
 
-  // Load saved videos from localStorage
+  // Load saved videos and notes from localStorage
   let savedVideos = JSON.parse(localStorage.getItem("videos")) || [];
 
-  // Function to render a video by ID
-  function renderVideo(videoId) {
-  const videoWrapper = document.createElement("div");
-  videoWrapper.className = "video-wrapper mb-3 bg-light p-3 rounded"; // adds bottom margin
+  function renderVideo(videoId, note = "") {
+    const videoWrapper = document.createElement("div");
+    videoWrapper.className = "video-wrapper mb-3 bg-light p-3 rounded";
 
-  // iframe
-  const iframe = document.createElement("iframe");
-  iframe.width = "560";
-  iframe.height = "315";
-  iframe.src = `https://www.youtube.com/embed/${videoId}`;
-  iframe.frameBorder = "0";
-  iframe.allow =
-    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-  iframe.allowFullscreen = true;
+    // iframe
+    const iframe = document.createElement("iframe");
+    iframe.width = "560";
+    iframe.height = "315";
+    iframe.src = `https://www.youtube.com/embed/${videoId}`;
+    iframe.frameBorder = "0";
+    iframe.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    iframe.allowFullscreen = true;
 
-  // remove button container (to center button)
-  const btnContainer = document.createElement("div");
-  btnContainer.className = "text-center m-2"; // center the button with margin top
+    // Buttons container
+    const btnContainer = document.createElement("div");
+    btnContainer.className = "text-center m-2 d-flex justify-content-center gap-2";
 
-  const removeBtn = document.createElement("button");
-  removeBtn.textContent = "Remove";
-  removeBtn.className = "btn btn-danger btn-lg";
+    // Remove button
+    const removeBtn = document.createElement("button");
+    removeBtn.textContent = "Remove";
+    removeBtn.className = "btn btn-danger btn-lg";
+    removeBtn.addEventListener("click", () => {
+      if (confirm("Are you sure you want to remove this video?")) {
+        videoWrapper.remove();
+        savedVideos = savedVideos.filter(v => v.id !== videoId);
+        localStorage.setItem("videos", JSON.stringify(savedVideos));
+      }
+    });
 
-  // click event
-  removeBtn.addEventListener("click", () => {
-    if (confirm("Are you sure you want to remove this video?")) {
-      videoWrapper.remove();
-      savedVideos = savedVideos.filter(id => id !== videoId);
+    // Add Note button
+    const noteBtn = document.createElement("button");
+    noteBtn.textContent = "Add Note";
+    noteBtn.className = "btn btn-info btn-lg";
+    noteBtn.setAttribute("data-bs-toggle", "collapse");
+    noteBtn.setAttribute("data-bs-target", `#note-${videoId}`);
+    noteBtn.setAttribute("aria-expanded", "false");
+    noteBtn.setAttribute("aria-controls", `note-${videoId}`);
+
+    // Collapsible note area
+    const noteWrapper = document.createElement("div");
+    noteWrapper.className = "collapse mt-2";
+    noteWrapper.id = `note-${videoId}`;
+
+    const noteTextarea = document.createElement("textarea");
+    noteTextarea.className = "form-control mb-2";
+    noteTextarea.placeholder = "Write your note here...";
+    noteTextarea.value = note;
+
+    const saveNoteBtn = document.createElement("button");
+    saveNoteBtn.className = "btn btn-success btn-sm mb-2";
+    saveNoteBtn.textContent = "Save Note";
+
+    // Display saved note
+    const noteDisplay = document.createElement("p");
+    noteDisplay.className = "mt-2";
+    noteDisplay.textContent = note;
+
+    // Save note event
+    saveNoteBtn.addEventListener("click", () => {
+      noteDisplay.textContent = noteTextarea.value;
+
+      // Update localStorage
+      savedVideos = savedVideos.map(v => {
+        if (v.id === videoId) return { id: videoId, note: noteTextarea.value };
+        return v;
+      });
       localStorage.setItem("videos", JSON.stringify(savedVideos));
-    }
-  });
 
-  btnContainer.appendChild(removeBtn);
+      // Collapse panel after save
+      const collapseInstance = bootstrap.Collapse.getInstance(noteWrapper);
+      if (collapseInstance) collapseInstance.hide();
+    });
 
-  videoWrapper.appendChild(iframe);
-  videoWrapper.appendChild(btnContainer);
+    noteWrapper.appendChild(noteTextarea);
+    noteWrapper.appendChild(saveNoteBtn);
+    noteWrapper.appendChild(noteDisplay);
 
-  container.appendChild(videoWrapper);
-}
+    // Append buttons
+    btnContainer.appendChild(removeBtn);
+    btnContainer.appendChild(noteBtn);
 
+    // Build wrapper
+    videoWrapper.appendChild(iframe);
+    videoWrapper.appendChild(btnContainer);
+    videoWrapper.appendChild(noteWrapper);
+
+    container.appendChild(videoWrapper);
+  }
 
   // Render saved videos on page load
-  savedVideos.forEach(id => renderVideo(id));
+  savedVideos.forEach(v => renderVideo(v.id, v.note));
 
   // Add video button listener
   addBtn.addEventListener("click", () => {
@@ -73,13 +117,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    savedVideos.push(videoId);
+    const newVideo = { id: videoId, note: "" };
+    savedVideos.push(newVideo);
     localStorage.setItem("videos", JSON.stringify(savedVideos));
     renderVideo(videoId);
 
-    // Clear input after adding
     urlInput.value = "";
-
   });
-
 });
