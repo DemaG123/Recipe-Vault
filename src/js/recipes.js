@@ -19,6 +19,31 @@ document.querySelectorAll('.nav-link').forEach(link => {
     });
 });
 
+const YT_API_KEY = "AIzaSyCFUKAwfK3PUvBdXsIq3WPd4534gPBY2Rs"; // replace with your key
+
+function extractVideoId(url) {
+    const regExp = /^.*((youtu.be\/)|(v\/)|(u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[7].length === 11) ? match[7] : null;
+}
+
+async function fetchYouTubeTitle(url) {
+    const videoId = extractVideoId(url);
+    if (!videoId) return "Unknown Video";
+
+    const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${YT_API_KEY}`;
+    try {
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        if (data.items && data.items.length > 0) {
+            return data.items[0].snippet.title;
+        }
+    } catch (err) {
+        console.error("Error fetching title:", err);
+    }
+    return "Unknown Video";
+}
+
 // Video storage functionality
 const videoUrlInput = document.getElementById('videoUrl');
 const addVideoBtn = document.getElementById('addVideoBtn');
@@ -69,7 +94,7 @@ function createVideoCard(video) {
     
     videoCard.innerHTML = `
         <div class="video-header">
-            <h3 class="video-title">Embedded Video</h3>
+            <h3 class="video-title">${video.title || "Embedded Video"}</h3>
             <span class="video-date">added ${video.dateAdded}</span>
         </div>
         <div class="video-embed">
@@ -133,31 +158,31 @@ function displayVideos() {
 }
 
 // Function to add a new video
-function addVideo() {
+async function addVideo() {
     const url = videoUrlInput.value.trim();
     
     if (!url) {
         showNotification('Please enter a video URL');
         return;
     }
-    
+
+    const title = await fetchYouTubeTitle(url);
+
     const videos = getVideos();
     const newVideo = {
         id: Date.now(),
         url: url,
-        dateAdded: new Date().toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-')
+        title: title,  // ✅ store fetched title
+        dateAdded: new Date().toLocaleDateString('en-CA', { 
+            year: 'numeric', month: '2-digit', day: '2-digit' 
+        }).replace(/\//g, '-')
     };
-    
+
     videos.push(newVideo);
     saveVideos(videos);
-    
-    // Clear input
+
     videoUrlInput.value = '';
-    
-    // Show notification
     showNotification('Video added successfully!');
-    
-    // Refresh display
     displayVideos();
 }
 
